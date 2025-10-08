@@ -1,30 +1,25 @@
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
-        if not t or not s:
+        if t == "":
             return ""
-        t_count = {}
+        count , window = {},{}
         for c in t:
-            t_count[c] = t_count.get(c, 0) + 1
-        required = len(t_count)
-        window_count = {}
-        formed = 0
-        l, r = 0, 0
-        min_len = float("inf")
-        min_window = (0, 0)
-        while r < len(s):
-            char = s[r]
-            window_count[char] = window_count.get(char, 0) + 1
-            if char in t_count and window_count[char] == t_count[char]:
-                formed += 1
-            while l <= r and formed == required:
-                if r - l + 1 < min_len:
-                    min_len = r - l + 1
-                    min_window = (l, r)
-                left_char = s[l]
-                window_count[left_char] -= 1
-                if left_char in t_count and window_count[left_char] < t_count[left_char]:
-                    formed -= 1
+            count[c] = 1 + count.get(c,0)
+        have , need = 0 , len(count)
+        res , reslen = [-1,-1] , float("infinity")
+        l = 0
+        for r in range(len(s)):
+            c = s[r]
+            window[c] = 1 + window.get(c,0)
+            if c in count and count[c] == window[c]:
+                have += 1
+            while need == have:
+                if r-l+1 < reslen:
+                    res = [l,r]
+                    reslen = r-l+1
+                window[s[l]] -= 1
+                if s[l] in count and window[s[l]] < count[s[l]]:
+                    have -= 1
                 l += 1
-            r += 1
-        l, r = min_window
-        return "" if min_len == float("inf") else s[l:r+1]
+        l,r = res
+        return s[l:r+1] if reslen != float("infinity") else ""
